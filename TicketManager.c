@@ -23,11 +23,19 @@ void MainMenu()
 			case 'v':
 				system("cls");
 				OutPutWithTime("您选择了功能 [浏览班次信息] \n");
-
+				OutPutAllBusTime();
+				printf("按回车键返回...");
+				getchar();
+				getchar();
+				system("cls");
+				Welcome();
 				break;
 			case 'c':
 				system("cls");
 				OutPutWithTime("您选择了功能 [查询路线] \n");
+				SearchBusFunction();
+				system("cls");
+				Welcome();
 				break;
 			case 'p':
 				system("cls");
