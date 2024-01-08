@@ -9,11 +9,11 @@ int checkinfo(char* username, char* password)
 	char buffer[1024]; // 存放每次读取到的字符串
 	strcat(username, "|");
 	strcat(username, password);
-
+	strcat(username, "\n");
 	file = fopen("data.bin", "r"); 
 	if (file == NULL)
 	{
-		return 0;
+		return -1;
 	}
 	fgets(buffer, sizeof(buffer), file);
 	fclose(file);
@@ -40,7 +40,7 @@ int verifyuser()
 	password[i] = '\0'; // 添加字符串结尾标志'\0'
 	//username 与 password用户信息
 
-	if (checkinfo(username, password) != -1)
+	if (checkinfo(username, password) == 0)
 	{
 		printf("\n");
 		//OutPutWithTime("验证成功");
