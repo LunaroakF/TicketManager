@@ -147,7 +147,7 @@ void WriteToFileAtLine(char* filename, int lineNumber, struct businfo *newinfo) 
 		if (currentLine == lineNumber) {
 			fprintf(tempFile, "%s", buffer);
 			fputs("\n", tempFile); // 向文件写入信息
-			fprintf(tempFile, "|%s|%s|%s|%.1f|%d|%d", newinfo->starttime, newinfo->startstation, newinfo->destination, newinfo->triplong, newinfo->max, newinfo->current);
+			fprintf(tempFile, "|%s|%s|%s|%.1f|%d|%d\n", newinfo->starttime, newinfo->startstation, newinfo->destination, newinfo->triplong, newinfo->max, newinfo->current);
 		}
 		else {
 			fprintf(tempFile, "%s", buffer);
@@ -515,9 +515,11 @@ void SearchBusFunction()
 
 void TradeTicket()
 {
+	printf("无账号登录系统的购票退票，仅限娱乐\n");
 	while (1)
 	{
-		printf("您可输入c查询今日所有班次，输入1来购票，0来退票:");
+		
+		printf("您可输入c查询今日所有班次，输入1来购票，0来退票，r退出:");
 		char answer[2];
 		scanf("%s", &answer);
 		if (answer[1] == '\0')
@@ -526,9 +528,139 @@ void TradeTicket()
 			{
 				OutPutAllBusTime();
 			}
-			else if (answer[1] == '1')
+			else if (answer[0] == '1')
 			{
+				printf("您选择了购买车票，请输入您要购买的班次:");
+				int num;
+				scanf("%d", &num);
+				struct businfo currentinfo;
+				FILE* file;
+				char line[100]; // 存储单行内容的字符数组
+				int targetLine = num; // 目标行号
+				file = fopen("data.bin", "r"); // 打开文件进行读取操作
+				fgets(line, sizeof(line), file);//跳过第一行
+				while ((fgetc(file)) != EOF && targetLine > 0)
+				{
+					fgets(line, sizeof(line), file); // 依次读取每一行
+					targetLine--;
+				}
+				fclose(file);
 
+				char* token = strtok(line, "|");
+				strcpy(currentinfo.starttime, token);
+				token = strtok(NULL, "|");
+				strcpy(currentinfo.startstation, token);
+				token = strtok(NULL, "|");
+				strcpy(currentinfo.destination, token);
+				char triplong[20];
+				token = strtok(NULL, "|");
+				strcpy(triplong, token);
+				currentinfo.triplong = atof(triplong);
+				char max[10];
+				token = strtok(NULL, "|");
+				strcpy(max, token);
+				currentinfo.max = atoi(max);
+				char current[10];
+				token = strtok(NULL, "|");
+				strcpy(current, token);
+				currentinfo.current = atoi(current);
+				printf("这是你即将购买的班车信息(输入1确认购买，0取消):\n");
+				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "班次", "发车时间", "起点站", "终点站", "行车时数", "额定载量", "已订票数", "|");
+				printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", num, currentinfo.starttime, currentinfo.startstation, currentinfo.destination, currentinfo.triplong, currentinfo.max, currentinfo.current, "|");
+				if (isLaterThanSystemTime(currentinfo.starttime))
+				{
+					printf("此班已发出");
+				}
+				printf("\n");
+				int as;
+				scanf("%d", &as);
+				if (as==1)
+				{
+					if (currentinfo.current>=currentinfo.max)
+					{
+						printf("对不起，该班次车票已售罄\n\n");
+					}
+					else if(isLaterThanSystemTime(currentinfo.starttime))
+					{
+						printf("对不起，此班已发出\n\n");
+					}
+					else
+					{
+						currentinfo.current++;
+						deleteLine("data.bin", num+1);
+						WriteToFileAtLine("data.bin", num, &currentinfo);
+						removeEmptyLines("data.bin");
+					}
+				}
+			}
+			else if (answer[0] == '0')
+			{
+				printf("您选择了退票，请输入您欲退票的班次:");
+				int num;
+				scanf("%d", &num);
+				struct businfo currentinfo;
+				FILE* file;
+				char line[100]; // 存储单行内容的字符数组
+				int targetLine = num; // 目标行号
+				file = fopen("data.bin", "r"); // 打开文件进行读取操作
+				fgets(line, sizeof(line), file);//跳过第一行
+				while ((fgetc(file)) != EOF && targetLine > 0)
+				{
+					fgets(line, sizeof(line), file); // 依次读取每一行
+					targetLine--;
+				}
+				fclose(file);
+
+				char* token = strtok(line, "|");
+				strcpy(currentinfo.starttime, token);
+				token = strtok(NULL, "|");
+				strcpy(currentinfo.startstation, token);
+				token = strtok(NULL, "|");
+				strcpy(currentinfo.destination, token);
+				char triplong[20];
+				token = strtok(NULL, "|");
+				strcpy(triplong, token);
+				currentinfo.triplong = atof(triplong);
+				char max[10];
+				token = strtok(NULL, "|");
+				strcpy(max, token);
+				currentinfo.max = atoi(max);
+				char current[10];
+				token = strtok(NULL, "|");
+				strcpy(current, token);
+				currentinfo.current = atoi(current);
+				printf("这是你即将退票的班车信息(输入1确认退票，0取消):\n");
+				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "班次", "发车时间", "起点站", "终点站", "行车时数", "额定载量", "已订票数", "|");
+				printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", num, currentinfo.starttime, currentinfo.startstation, currentinfo.destination, currentinfo.triplong, currentinfo.max, currentinfo.current, "|");
+				if (isLaterThanSystemTime(currentinfo.starttime))
+				{
+					printf("此班已发出");
+				}
+				printf("\n");
+				int as;
+				scanf("%d", &as);
+				if (as == 1)
+				{
+					if (currentinfo.current == 0)
+					{
+						printf("对不起，该班次车票为零\n\n");
+					}
+					else if (isLaterThanSystemTime(currentinfo.starttime))
+					{
+						printf("对不起，此班已发出\n\n");
+					}
+					else
+					{
+						currentinfo.current--;
+						deleteLine("data.bin", num + 1);
+						WriteToFileAtLine("data.bin", num, &currentinfo);
+						removeEmptyLines("data.bin");
+					}
+				}
+			}
+			else if(answer[0]=='r')
+			{
+				return;
 			}
 		}
 	}
