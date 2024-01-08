@@ -5,11 +5,8 @@
 
 char cwd[1024];
 
-int main()
+void MainMenu()
 {
-	getcwd(cwd, sizeof(cwd));//获取程序运行目录
-	Welcome();
-
 	while (1)
 	{
 		char order[2];
@@ -46,4 +43,11 @@ int main()
 			printf("指令非法，请重试:");
 		}
 	}
+}
+
+int main()
+{
+	getcwd(cwd, sizeof(cwd));//获取程序运行目录
+	Welcome();
+	MainMenu();
 }

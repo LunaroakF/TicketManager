@@ -3,6 +3,10 @@
 #include <time.h>
 #include <conio.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include "VerifyUser.h"
+
+
 
 void OutPutWithTime(char* data)//带时间输出信息
 {
@@ -44,22 +48,30 @@ void Welcome()
 	printf("\n现在，请输入您需要操作的代码:");
 }
 
+
 void WriteBusDataFunction()
 {
-	printf("该操作需要验证身份，请登录\n");
-	printf("默认用户名密码都为admin\n");
-	printf("用户名:");
-	char username[100];
-	scanf("%s", &username);
-	printf("密码:");
-	char password[100];
-	int i = 0;
-	while (1) {
-		password[i] = _getch(); // 通过getch()函数获取隐藏的字符输入
-		if (password[i] == '\r') break; // 当按下Enter键时结束输入
-		putchar('*'); // 显示为星号
-		i++;
+	if (verifyuser())
+	{
+		system("cls");
+		OutPutWithTime("验证成功");
+
 	}
-	password[i] = '\0'; // 添加字符串结尾标志'\0'
-	//username 与 password用户信息
+	else
+	{
+		OutPutWithTime("用户名或密码错误");
+		printf("是否重试?(输入1或0):\n");
+		int data;
+		scanf("%d", &data);
+		if (data==1)
+		{
+			WriteBusDataFunction();
+		}
+		else
+		{
+			system("cls");
+			Welcome();
+		}
+	}
+
 }
