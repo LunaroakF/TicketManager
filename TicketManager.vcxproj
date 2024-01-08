@@ -131,8 +131,16 @@
     <ClCompile Include="TicketManager.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="TicketManagerSystemlib.h" />
     <ClInclude Include="VerifyUser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TicketManager.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Dart\hrm__by_chideco_dg4of71 拷贝.png" />
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

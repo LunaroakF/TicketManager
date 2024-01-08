@@ -512,3 +512,24 @@ void SearchBusFunction()
 		}
 	}
 }
+
+void TradeTicket()
+{
+	while (1)
+	{
+		printf("您可输入c查询今日所有班次，输入1来购票，0来退票:");
+		char answer[2];
+		scanf("%s", &answer);
+		if (answer[1] == '\0')
+		{
+			if (answer[0] == 'c')
+			{
+				OutPutAllBusTime();
+			}
+			else if (answer[1] == '1')
+			{
+
+			}
+		}
+	}
+}

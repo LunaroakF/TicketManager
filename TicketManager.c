@@ -40,6 +40,9 @@ void MainMenu()
 			case 'p':
 				system("cls");
 				OutPutWithTime("您选择了功能 [售票与退票] \n");
+				TradeTicket();
+				system("cls");
+				Welcome();
 				break;
 			default:
 				printf("指令非法，请重试:");
