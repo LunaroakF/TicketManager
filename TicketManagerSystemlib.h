@@ -80,6 +80,93 @@ void WriteToFileAtLine(char* filename, int lineNumber, struct businfo *newinfo) 
 	rename("temp.bin", filename);
 }
 
+void removeEmptyLines(const char* filename) {
+	FILE* inputFile, * outputFile;
+	char buffer[512];
+
+	// 打开原始文件
+	inputFile = fopen(filename, "r");
+	if (inputFile == NULL) {
+		printf("无法打开文件 %s\n", filename);
+		return;
+	}
+
+	// 创建一个临时文件
+	outputFile = fopen("temp.txt", "w");
+	if (outputFile == NULL) {
+		printf("无法创建临时文件\n");
+		fclose(inputFile);
+		return;
+	}
+
+	// 逐行读取原始文件并复制到临时文件，跳过空白行
+	while (fgets(buffer, sizeof(buffer), inputFile) != NULL) {
+		// 判断当前行是否为空白行
+		int isEmpty = 1; // 假设为空白行
+		for (int i = 0; buffer[i] != '\0'; i++) {
+			if (buffer[i] != ' ' && buffer[i] != '\t' && buffer[i] != '\n' && buffer[i] != '\r') {
+				isEmpty = 0;
+				break;
+			}
+		}
+
+		// 如果不是空白行，则写入临时文件
+		if (!isEmpty) {
+			fputs(buffer, outputFile);
+		}
+	}
+
+	// 关闭文件
+	fclose(inputFile);
+	fclose(outputFile);
+
+	// 删除原始文件
+	remove(filename);
+
+	// 重命名临时文件为原始文件
+	rename("temp.txt", filename);
+}
+
+void deleteLine(const char* filename, int totalLines) {
+	FILE* inputFile, * outputFile;
+	char buffer[512];
+	int currentLine = 0;
+
+	// 打开原始文件
+	inputFile = fopen(filename, "r");
+	if (inputFile == NULL) {
+		printf("无法打开文件 %s\n", filename);
+		return;
+	}
+
+	// 创建一个临时文件
+	outputFile = fopen("temp.txt", "w");
+	if (outputFile == NULL) {
+		printf("无法创建临时文件\n");
+		fclose(inputFile);
+		return;
+	}
+
+	// 逐行读取原始文件并复制到临时文件，跳过最后一行
+	while (fgets(buffer, sizeof(buffer), inputFile) != NULL) {
+		currentLine++;
+		if (currentLine != totalLines) {
+			fputs(buffer, outputFile);
+		}
+	}
+
+	// 关闭文件
+	fclose(inputFile);
+	fclose(outputFile);
+
+	// 删除原始文件
+	remove(filename);
+
+	// 重命名临时文件为原始文件
+	rename("temp.txt", filename);
+	
+}
+
 void OutPutWithTime(char* data)//带时间输出信息
 {
 	struct date {
@@ -133,13 +220,56 @@ void AddNewBus()
 	if (answer == 1)
 	{
 		WriteToFileAtLine("data.bin", targetLine, &newinfo);
+		removeEmptyLines("data.bin");
 		OutPutWithTime("信息已保存");
 	}
 }
 
 void DelBus()
 {
-	
+	printf("请输入欲删除的班车班次序号:");
+	int num;
+	struct businfo delinfo;
+	scanf("%d", &num);
+	FILE* file;
+	char line[100]; // 存储单行内容的字符数组
+	int targetLine = num; // 目标行号
+	file = fopen("data.bin", "r"); // 打开文件进行读取操作
+	fgets(line, sizeof(line), file);//跳过第一行
+	while ((fgetc(file)) != EOF&&targetLine>0)
+	{
+		fgets(line, sizeof(line), file); // 依次读取每一行
+		targetLine--;
+	}
+	fclose(file);
+
+	char* token = strtok(line, "|");
+	strcpy(delinfo.starttime, token);
+	token = strtok(NULL, "|");
+	strcpy(delinfo.startstation, token);
+	token = strtok(NULL, "|");
+	strcpy(delinfo.destination, token);
+	char triplong[20];
+	token = strtok(NULL, "|");
+	strcpy(triplong, token);
+	delinfo.triplong = atof(triplong);
+	char max[10];
+	token = strtok(NULL, "|");
+	strcpy(max, token);
+	delinfo.max = atoi(max);
+	char current[10];
+	token = strtok(NULL, "|");
+	strcpy(current, token);
+	delinfo.current = atoi(current);
+	printf("这是你即将删除的班车信息(输入1删除，0取消):\n");
+	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "班次", "发车时间", "起点站", "终点站", "行车时数", "额定载量", "已订票数", "|");
+	printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s\n", num, delinfo.starttime, delinfo.startstation, delinfo.destination, delinfo.triplong, delinfo.max, delinfo.current, "|");
+	int answer;
+	scanf("%d", &answer);
+	if (answer==1)
+	{
+		deleteLine("data.bin", num+1);
+	}
 }
 
 void Welcome()
@@ -192,7 +322,7 @@ void WriteBusDataFunction()
 					AddNewBus();
 					break;
 				case '0':
-					OutPutWithTime("您选择删除一班班车，请根据下列出的所有班次输入班次序号删除(输入序号):");
+					OutPutWithTime("您选择删除一班班车，请根据下列指引删除班车信息:");
 					DelBus();
 					break;
 				default:
