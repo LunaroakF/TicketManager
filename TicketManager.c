@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include "TicketManagerSystemlib.h"
-#include <stdlib.h>
-#define _CRT_SECURE_NO_WARNINGS 1
+#define _CRT_SECURE_NO_WARNINGS 1//编译器禁用安全警告
+#include <stdio.h>//标准输入输出
+#include "TicketManagerSystemlib.h"//自定义头文件，存放车票系统所需大部分函数功能
+#include <stdlib.h>//清空控制台要用system("cls");
 
-char cwd[1024];
-
+//等待用户在主菜单选择功能，调用该函数前一般与 "TicketManagerSystemlib.h" 中的 void Welcome() 一起调用
 void MainMenu()
 {
 	while (1)
@@ -19,6 +18,9 @@ void MainMenu()
 				system("cls");
 				OutPutWithTime("您选择了功能 [录入班次信息] \n");
 				WriteBusDataFunction();
+
+				system("cls");
+				Welcome();
 				break;
 			case 'v':
 				system("cls");
@@ -27,6 +29,7 @@ void MainMenu()
 				printf("按回车键返回...");
 				getchar();
 				getchar();
+
 				system("cls");
 				Welcome();
 				break;
@@ -34,6 +37,7 @@ void MainMenu()
 				system("cls");
 				OutPutWithTime("您选择了功能 [查询路线] \n");
 				SearchBusFunction();
+
 				system("cls");
 				Welcome();
 				break;
@@ -41,6 +45,7 @@ void MainMenu()
 				system("cls");
 				OutPutWithTime("您选择了功能 [售票与退票] \n");
 				TradeTicket();
+
 				system("cls");
 				Welcome();
 				break;
@@ -55,10 +60,9 @@ void MainMenu()
 		}
 	}
 }
-
+//程序入口
 int main()
 {
-	getcwd(cwd, sizeof(cwd));//获取程序运行目录
 	Welcome();
 	MainMenu();
 }

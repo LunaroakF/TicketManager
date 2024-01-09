@@ -1,55 +1,56 @@
-#pragma once
-#define _CRT_SECURE_NO_WARNINGS 1
-#include <time.h>
-#include <conio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "VerifyUser.h"
+ï»¿#pragma once
+#define _CRT_SECURE_NO_WARNINGS 1//ç¼–è¯‘å™¨ç¦ç”¨å®‰å…¨è­¦å‘Š
+#include <time.h>//è·å–ç³»ç»Ÿæ—¶é—´ä¸æ¯”è¾ƒ
+#include <stdio.h>//æ ‡å‡†è¾“å…¥è¾“å‡º
+#include <stdlib.h>//æ¸…ç©ºæ§åˆ¶å°è¦ç”¨system("cls");
+#include <string.h>//ç”¨strcmpæ¯”è¾ƒå­—ç¬¦ä¸²ä¹‹ç±»çš„ä¸œè¥¿å¯¹å­—ç¬¦ä¸²ä¿®æ”¹
+#include "VerifyUser.h"//éªŒè¯ç®¡ç†å‘˜èº«ä»½
 
+// è½¦æ¬¡åŸºæœ¬æ•°æ®ç»“æ„
 struct businfo
 {
-	char starttime[10];
-	char startstation[20];
-	char destination[20];
-	float triplong;
-	int max;
-	int current;
+	char starttime[10];//å‘è½¦æ—¶é—´
+	char startstation[20];//èµ·ç‚¹ç«™
+	char destination[20];//ç»ˆç‚¹ç«™
+	float triplong;//è¡Œè½¦æ—¶æ•°
+	int max;//é¢å®šè½½é‡
+	int current;//å·²è®¢ç¥¨æ•°
 };
 
-int isLaterThanSystemTime(const char* inputTime) {
-	// »ñÈ¡µ±Ç°ÏµÍ³Ê±¼ä
+// æ¯”è¾ƒä¼ å…¥æ—¶é—´(ä¼ å…¥æ•°æ®å¦‚"8:00")ä¸ç³»ç»Ÿæ—¶é—´ï¼Œä¼ å…¥çš„æ—¶é—´æ—©äºç³»ç»Ÿæ—¶é—´è¿”å›0(å·²å‘ç­)ï¼Œæ™šäºç³»ç»Ÿæ—¶é—´è¿”å›1(æœªå‘ç­)
+int isLaterThanSystemTime(char* inputTime) {
+	//è·å–å½“å‰ç³»ç»Ÿæ—¶é—´
 	time_t currentTime;
 	struct tm* localTime;
-
 	time(&currentTime);
-	localTime = localtime(&currentTime);
+	localTime = localtime(&currentTime);//è½¬æ¢ä¸ºæœ¬åœ°æ—¶é—´
 
-	// ½âÎö´«ÈëµÄÊ±¼ä×Ö·û´®
+	// è§£æä¼ å…¥çš„æ—¶é—´å­—ç¬¦ä¸²ï¼Œä»inputTimeå­—ç¬¦ä¸²ä¸­ä»¥':'åˆ†å‰²å¼€æ¥ï¼Œæ ¼å¼åŒ–å­˜å‚¨æ•°æ®æ–¹ä¾¿åé¢æ¯”è¾ƒ
 	int inputHour, inputMinute;
 	sscanf(inputTime, "%d:%d", &inputHour, &inputMinute);
 
-	// ±È½ÏÊ±¼ä
+	// æ¯”è¾ƒæ—¶é—´
 	if (localTime->tm_hour < inputHour || (localTime->tm_hour == inputHour && localTime->tm_min < inputMinute)) {
-		return 0; // ´«ÈëµÄÊ±¼äÔçÓÚÏµÍ³Ê±¼ä
+		return 0; // ä¼ å…¥çš„æ—¶é—´æ—©äºç³»ç»Ÿæ—¶é—´
 	}
 	else {
-		return 1; // ´«ÈëµÄÊ±¼äÍíÓÚµÈÓÚÏµÍ³Ê±¼ä
+		return 1; // ä¼ å…¥çš„æ—¶é—´æ™šäºç­‰äºç³»ç»Ÿæ—¶é—´
 	}
 }
-
+// è¾“å‡ºæ‰€æœ‰è½¦æ¬¡è¡¨ æˆ– è¿›å…¥ [æµè§ˆç­æ¬¡ä¿¡æ¯] åŠŸèƒ½
 void OutPutAllBusTime()
 {
 	struct businfo lineinfo;
 	FILE* file;
-	char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-	int targetLine = 1; // Ä¿±êĞĞºÅ
-	file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-	fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
-	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
-	while ((fgetc(file)) != EOF)
+	char line[100]; //å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+	int targetLine = 1; //ç›®æ ‡è¡Œå·
+	file = fopen("data.bin", "r"); //æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+	fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
+	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");//è¡¨æ ¼æ ‡é¢˜
+	while ((fgetc(file)) != EOF)//è¾“å‡ºç›´åˆ°è¯»ä¸åˆ°ä¸œè¥¿
 	{
-		fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
+		fgets(line, sizeof(line), file);//ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
+		//ä¾æ¬¡ä»¥'|'åˆ†éš”è¯»æ¥çš„ä¸€è¡Œå­˜å‚¨åˆ°lineinfo
 		char* token = strtok(line, "|");
 		strcpy(lineinfo.starttime, token);
 		token = strtok(NULL, "|");
@@ -68,31 +69,32 @@ void OutPutAllBusTime()
 		token = strtok(NULL, "|");
 		strcpy(current, token);
 		lineinfo.current = atoi(current);
+
 		printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", targetLine, lineinfo.starttime, lineinfo.startstation, lineinfo.destination, lineinfo.triplong, lineinfo.max, lineinfo.current, "|");
 		if (isLaterThanSystemTime(lineinfo.starttime))
 		{
-			printf("´Ë°àÒÑ·¢³ö");
+			printf("æ­¤ç­å·²å‘å‡º");
 		}
 		printf("\n");
 		targetLine++;
 	}
 	fclose(file);
 }
-
+// æŒ‰ç›®çš„åœ°è¾“å‡ºæ‰€æœ‰åŒ¹é…çš„è½¦æ¬¡è¡¨(ä¼ å…¥æ•°æ®å¦‚"åå °")
 void OutPutAllBusTimeByName(char* name)
 {
 	struct businfo lineinfo;
 	FILE* file;
-	char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-	int targetLine = 1; // Ä¿±êĞĞºÅ
-	file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-	fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
-	int isHave = 0;
-	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
+	char line[100];//å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+	int targetLine = 1;//ç›®æ ‡è¡Œå·
+	file = fopen("data.bin", "r");//æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+	fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
+	int isHave = 0;//ç›®å‰æ‰¾åˆ°äº†ç›®æ ‡è½¦æ¬¡äº†å—(0=æ²¡æœ‰ 1=æœ‰ä¸”>=1)
+	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");//è¡¨æ ¼æ ‡é¢˜
 	while ((fgetc(file)) != EOF)
 	{
-		fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
-
+		fgets(line, sizeof(line), file);//ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
+		//ä¾æ¬¡ä»¥'|'åˆ†éš”è¯»æ¥çš„ä¸€è¡Œå­˜å‚¨åˆ°lineinfo
 		char* token = strtok(line, "|");
 		strcpy(lineinfo.starttime, token);
 		token = strtok(NULL, "|");
@@ -121,7 +123,7 @@ void OutPutAllBusTimeByName(char* name)
 		printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", targetLine, lineinfo.starttime, lineinfo.startstation, lineinfo.destination, lineinfo.triplong, lineinfo.max, lineinfo.current, "|");
 		if (isLaterThanSystemTime(lineinfo.starttime))
 		{
-			printf("´Ë°àÒÑ·¢³ö");
+			printf("æ­¤ç­å·²å‘å‡º");
 		}
 		printf("\n");
 		targetLine++;
@@ -129,16 +131,17 @@ void OutPutAllBusTimeByName(char* name)
 	fclose(file);
 	if (isHave==0)
 	{
-		printf("Î´ÕÒµ½ÓĞĞ§°à´Î\n");
+		printf("æœªæ‰¾åˆ°æœ‰æ•ˆç­æ¬¡\n");
 	}
 }
-
+// å°† ç»“æ„ä½“businfo ä¸­çš„ä¿¡æ¯å†™å…¥åˆ°æ–‡ä»¶æŒ‡å®šè¡Œï¼Œè¿›è¡Œå¼ºåˆ¶æ›¿æ¢çš„å†™æ³•(ä¼ å…¥æ•°æ®å¦‚[ "data.bin", 2, &businfo])
 void WriteToFileAtLine(char* filename, int lineNumber, struct businfo *newinfo) {
+	//ç”¨ä¸´æ—¶æ–‡ä»¶è¦†ç›–çš„æ–¹æ³•
 	FILE* file = fopen(filename, "r");
 	FILE* tempFile = fopen("temp.bin", "w");
 
 	if (file == NULL || tempFile == NULL) {
-		printf("ÎŞ·¨´ò¿ªÎÄ¼ş»ò´´½¨ÁÙÊ±ÎÄ¼ş¡£\n");
+		printf("æ— æ³•æ‰“å¼€æ–‡ä»¶æˆ–åˆ›å»ºä¸´æ—¶æ–‡ä»¶ã€‚\n");
 		exit(EXIT_FAILURE);
 	}
 	char buffer[1024];
@@ -146,11 +149,11 @@ void WriteToFileAtLine(char* filename, int lineNumber, struct businfo *newinfo) 
 	while (fgets(buffer, sizeof(buffer), file) != NULL) {
 		if (currentLine == lineNumber) {
 			fprintf(tempFile, "%s", buffer);
-			fputs("\n", tempFile); // ÏòÎÄ¼şĞ´ÈëĞÅÏ¢
+			fputs("\n", tempFile); // å‘ç¼“å­˜æ–‡ä»¶å†™å…¥ä¿¡æ¯
 			fprintf(tempFile, "|%s|%s|%s|%.1f|%d|%d\n", newinfo->starttime, newinfo->startstation, newinfo->destination, newinfo->triplong, newinfo->max, newinfo->current);
 		}
 		else {
-			fprintf(tempFile, "%s", buffer);
+			fprintf(tempFile, "%s", buffer);//å°†æ•°æ®æ–‡ä»¶ä¸­çš„å½“å‰è¡Œä¸¢åˆ°ç¼“å­˜æ–‡ä»¶é‡Œ
 		}
 		currentLine++;
 	}
@@ -159,30 +162,30 @@ void WriteToFileAtLine(char* filename, int lineNumber, struct businfo *newinfo) 
 	remove(filename);
 	rename("temp.bin", filename);
 }
-
-void removeEmptyLines(const char* filename) {
+// æ–‡ä»¶å†™å…¥åå¯èƒ½ä¼šå‡ºç°ç©ºç™½è¡Œï¼Œå½±å“ä¸‹æ¬¡æ•°æ®çš„å†™å…¥ï¼Œæ¯æ¬¡ä¿®æ”¹å®Œæ–‡ä»¶åè¿è¡Œä¸€æ¬¡ï¼Œåˆ é™¤æ‰€æœ‰çš„ç©ºç™½è¡Œ(ä¼ å…¥æ•°æ®å¦‚"data.bin")
+void removeEmptyLines(char* filename) {
 	FILE* inputFile, * outputFile;
 	char buffer[512];
 
-	// ´ò¿ªÔ­Ê¼ÎÄ¼ş
+	//æ‰“å¼€åŸå§‹æ–‡ä»¶
 	inputFile = fopen(filename, "r");
 	if (inputFile == NULL) {
-		printf("ÎŞ·¨´ò¿ªÎÄ¼ş %s\n", filename);
+		printf("æ— æ³•æ‰“å¼€æ–‡ä»¶ %s\n", filename);
 		return;
 	}
 
-	// ´´½¨Ò»¸öÁÙÊ±ÎÄ¼ş
+	//åˆ›å»ºä¸€ä¸ªä¸´æ—¶æ–‡ä»¶
 	outputFile = fopen("temp.txt", "w");
 	if (outputFile == NULL) {
-		printf("ÎŞ·¨´´½¨ÁÙÊ±ÎÄ¼ş\n");
+		printf("æ— æ³•åˆ›å»ºä¸´æ—¶æ–‡ä»¶\n");
 		fclose(inputFile);
 		return;
 	}
 
-	// ÖğĞĞ¶ÁÈ¡Ô­Ê¼ÎÄ¼ş²¢¸´ÖÆµ½ÁÙÊ±ÎÄ¼ş£¬Ìø¹ı¿Õ°×ĞĞ
+	//é€è¡Œè¯»å–åŸå§‹æ–‡ä»¶å¹¶å¤åˆ¶åˆ°ä¸´æ—¶æ–‡ä»¶ï¼Œè·³è¿‡ç©ºç™½è¡Œ
 	while (fgets(buffer, sizeof(buffer), inputFile) != NULL) {
-		// ÅĞ¶Ïµ±Ç°ĞĞÊÇ·ñÎª¿Õ°×ĞĞ
-		int isEmpty = 1; // ¼ÙÉèÎª¿Õ°×ĞĞ
+		//åˆ¤æ–­å½“å‰è¡Œæ˜¯å¦ä¸ºç©ºç™½è¡Œ
+		int isEmpty = 1; //å‡è®¾ä¸ºç©ºç™½è¡Œ
 		for (int i = 0; buffer[i] != '\0'; i++) {
 			if (buffer[i] != ' ' && buffer[i] != '\t' && buffer[i] != '\n' && buffer[i] != '\r') {
 				isEmpty = 0;
@@ -190,144 +193,153 @@ void removeEmptyLines(const char* filename) {
 			}
 		}
 
-		// Èç¹û²»ÊÇ¿Õ°×ĞĞ£¬ÔòĞ´ÈëÁÙÊ±ÎÄ¼ş
+		//å¦‚æœä¸æ˜¯ç©ºç™½è¡Œï¼Œåˆ™å†™å…¥ä¸´æ—¶æ–‡ä»¶
 		if (!isEmpty) {
 			fputs(buffer, outputFile);
 		}
 	}
 
-	// ¹Ø±ÕÎÄ¼ş
+	// å…³é—­æ–‡ä»¶
 	fclose(inputFile);
 	fclose(outputFile);
 
-	// É¾³ıÔ­Ê¼ÎÄ¼ş
+	// åˆ é™¤åŸå§‹æ–‡ä»¶
 	remove(filename);
 
-	// ÖØÃüÃûÁÙÊ±ÎÄ¼şÎªÔ­Ê¼ÎÄ¼ş
+	// é‡å‘½åä¸´æ—¶æ–‡ä»¶ä¸ºåŸå§‹æ–‡ä»¶
 	rename("temp.txt", filename);
 }
-
-void deleteLine(const char* filename, int totalLines) {
+// åˆ é™¤æŒ‡å®šè¡Œçš„å†…å®¹(ä¼ å…¥æ•°æ®å¦‚["data.bin", 1])
+void deleteLine(char* filename, int line) {
 	FILE* inputFile, * outputFile;
 	char buffer[512];
 	int currentLine = 0;
-
-	// ´ò¿ªÔ­Ê¼ÎÄ¼ş
+	// æ‰“å¼€åŸå§‹æ–‡ä»¶
 	inputFile = fopen(filename, "r");
 	if (inputFile == NULL) {
-		printf("ÎŞ·¨´ò¿ªÎÄ¼ş %s\n", filename);
+		printf("æ— æ³•æ‰“å¼€æ–‡ä»¶ %s\n", filename);
 		return;
 	}
-
-	// ´´½¨Ò»¸öÁÙÊ±ÎÄ¼ş
+	// åˆ›å»ºä¸€ä¸ªä¸´æ—¶æ–‡ä»¶
 	outputFile = fopen("temp.txt", "w");
 	if (outputFile == NULL) {
-		printf("ÎŞ·¨´´½¨ÁÙÊ±ÎÄ¼ş\n");
+		printf("æ— æ³•åˆ›å»ºä¸´æ—¶æ–‡ä»¶\n");
 		fclose(inputFile);
 		return;
 	}
-
-	// ÖğĞĞ¶ÁÈ¡Ô­Ê¼ÎÄ¼ş²¢¸´ÖÆµ½ÁÙÊ±ÎÄ¼ş£¬Ìø¹ı×îºóÒ»ĞĞ
+	// é€è¡Œè¯»å–åŸå§‹æ–‡ä»¶å¹¶å¤åˆ¶åˆ°ä¸´æ—¶æ–‡ä»¶ï¼Œè·³è¿‡æœ€åä¸€è¡Œ
 	while (fgets(buffer, sizeof(buffer), inputFile) != NULL) {
 		currentLine++;
-		if (currentLine != totalLines) {
+		if (currentLine != line) {
 			fputs(buffer, outputFile);
 		}
 	}
 
-	// ¹Ø±ÕÎÄ¼ş
+	// å…³é—­æ–‡ä»¶
 	fclose(inputFile);
 	fclose(outputFile);
 
-	// É¾³ıÔ­Ê¼ÎÄ¼ş
+	// åˆ é™¤åŸå§‹æ–‡ä»¶
 	remove(filename);
 
-	// ÖØÃüÃûÁÙÊ±ÎÄ¼şÎªÔ­Ê¼ÎÄ¼ş
+	// é‡å‘½åä¸´æ—¶æ–‡ä»¶ä¸ºåŸå§‹æ–‡ä»¶
 	rename("temp.txt", filename);
 	
 }
-
-void OutPutWithTime(char* data)//´øÊ±¼äÊä³öĞÅÏ¢
+// è¾“å‡ºå¸¦æ—¶é—´çš„æ—¥å¿—ï¼Œè‡ªå¸¦å›è½¦(ä¼ å…¥æ•°æ®å¦‚"å®³æ€•") (è¾“å‡ºæ•°æ®å¦‚"[2024-01-09 18:36:51] å®³æ€•")
+void OutPutWithTime(char* data)//å¸¦æ—¶é—´è¾“å‡ºä¿¡æ¯
 {
 	struct date {
-		int tm_sec;         //Ãë
-		int tm_min;         //·Ö
-		int tm_hour;        //Ê±
-		int tm_mday;        //ÈÕ
-		int tm_mon;         //ÔÂ
-		int tm_year;        //Äê
+		int tm_sec;         //ç§’
+		int tm_min;         //åˆ†
+		int tm_hour;        //æ—¶
+		int tm_mday;        //æ—¥
+		int tm_mon;         //æœˆ
+		int tm_year;        //å¹´
 	};
 	time_t currenttime;
 	struct date* currentdate;
 	char output[20];
-	time(&currenttime);               //»ñÈ¡Êı¾İ
-	currentdate = localtime(&currenttime);    //×ª»»Îª±±¾©Ê±¼ä
-	strftime(output, 20, "%Y-%m-%d %H:%M:%S", currentdate);  //¸ñÊ½»¯2024-01-01 12:00:00
+	time(&currenttime);//è·å–æ•°æ®
+	currentdate = localtime(&currenttime);//è½¬æ¢ä¸ºæœ¬åœ°æ—¶é—´
+	strftime(output, 20, "%Y-%m-%d %H:%M:%S", currentdate);  //æ ¼å¼åŒ–2024-01-01 12:00:00
 	printf("[%s] %s\n", output,data);
 }
-
+// å·²ç»éªŒè¯ç®¡ç†å‘˜èº«ä»½åè°ƒç”¨çš„æ·»åŠ è½¦æ¬¡äº¤äº’
 void AddNewBus()
 {
 	FILE* file;
-	char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-	int targetLine = 1; // Ä¿±êĞĞºÅ
-	file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-	fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
+	char line[100]; // å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+	int targetLine = 1; // ç›®æ ‡è¡Œå·
+	file = fopen("data.bin", "r"); // æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+	fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
 	while ((fgetc(file)) != EOF)
 	{
-		fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
+		fgets(line, sizeof(line), file); // ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
 		targetLine++;
 	}
 	fclose(file);
 	struct businfo newinfo;
-	printf("Çë¼üÈë°à³µ ·¢³µÊ±¼ä:");
+	printf("è¯·é”®å…¥ç­è½¦ å‘è½¦æ—¶é—´:");
 	scanf("%s", &newinfo.starttime);
-	printf("Çë¼üÈë°à³µ ÆğµãÕ¾:");
+	printf("è¯·é”®å…¥ç­è½¦ èµ·ç‚¹ç«™:");
 	scanf("%s", &newinfo.startstation);
-	printf("Çë¼üÈë°à³µ ÖÕµãÕ¾:");
+	printf("è¯·é”®å…¥ç­è½¦ ç»ˆç‚¹ç«™:");
 	scanf("%s", &newinfo.destination);
-	printf("Çë¼üÈë°à³µ ĞĞ³ÌÊ±¼ä(Ğ¡Ê±h):");
+	printf("è¯·é”®å…¥ç­è½¦ è¡Œç¨‹æ—¶é—´(å°æ—¶h):");
 	scanf("%f", &newinfo.triplong);
-	printf("Çë¼üÈë°à³µ ¶î¶¨ÔØ¿ÍÁ¿:");
+	printf("è¯·é”®å…¥ç­è½¦ é¢å®šè½½å®¢é‡:");
 	scanf("%d", &newinfo.max);
-	printf("Çë¼üÈë°à³µ ÒÑ¶©Æ±ÈËÊı:");
+	printf("è¯·é”®å…¥ç­è½¦ å·²è®¢ç¥¨äººæ•°:");
 	scanf("%d", &newinfo.current);
-	printf("ÇëÈ·ÈÏÄúµÄ°à³µĞÅÏ¢(ÊäÈë1Í¬Òâ£¬0ÉáÆú):\n");
-	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
+	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");
 	printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", targetLine, newinfo.starttime, newinfo.startstation, newinfo.destination, newinfo.triplong, newinfo.max, newinfo.current, "|");
 	if (isLaterThanSystemTime(newinfo.starttime))
 	{
-		printf("´Ë°àÒÑ·¢³ö");
+		printf("æ­¤ç­å·²å‘å‡º");
 	}
 	printf("\n");
+	printf("è¯·ç¡®è®¤æ‚¨çš„ç­è½¦ä¿¡æ¯(è¾“å…¥1åŒæ„ï¼Œ0èˆå¼ƒ):\n");
 	int answer;
 	scanf("%d", &answer);
 	if (answer == 1)
 	{
 		WriteToFileAtLine("data.bin", targetLine, &newinfo);
 		removeEmptyLines("data.bin");
-		OutPutWithTime("ĞÅÏ¢ÒÑ±£´æ");
+		OutPutWithTime("ä¿¡æ¯å·²ä¿å­˜");
 	}
 }
-
+// å·²ç»éªŒè¯ç®¡ç†å‘˜èº«ä»½åè°ƒç”¨çš„åˆ é™¤è½¦æ¬¡äº¤äº’
 void DelBus()
 {
-	printf("ÇëÊäÈëÓûÉ¾³ıµÄ°à³µ°à´ÎĞòºÅ:");
+	printf("è¯·è¾“å…¥æ¬²åˆ é™¤çš„ç­è½¦ç­æ¬¡åºå·:");
 	int num;
 	struct businfo delinfo;
 	scanf("%d", &num);
+	if (num <= 0)
+	{
+		printf("å¯¹ä¸èµ·ï¼Œè¯·è¾“å…¥æ­£ç¡®çš„ç­æ¬¡\n\n");
+		DelBus();
+		return;
+	}
 	FILE* file;
-	char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-	int targetLine = num; // Ä¿±êĞĞºÅ
-	file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-	fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
+	char line[100]; // å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+	int targetLine = num; // ç›®æ ‡è¡Œå·
+	file = fopen("data.bin", "r"); // æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+	fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
 	while ((fgetc(file)) != EOF&&targetLine>0)
 	{
-		fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
+		fgets(line, sizeof(line), file); // ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
 		targetLine--;
 	}
 	fclose(file);
-
+	if (targetLine != 0)
+	{
+		printf("å¯¹ä¸èµ·ï¼Œæœªæ‰¾åˆ°è¯¥ç­æ¬¡\n\n");
+		DelBus();
+		return;
+	}
+	//ä¾æ¬¡ä»¥'|'åˆ†éš”è¯»æ¥çš„ä¸€è¡Œå­˜å‚¨åˆ°delinfo
 	char* token = strtok(line, "|");
 	strcpy(delinfo.starttime, token);
 	token = strtok(NULL, "|");
@@ -346,12 +358,12 @@ void DelBus()
 	token = strtok(NULL, "|");
 	strcpy(current, token);
 	delinfo.current = atoi(current);
-	printf("ÕâÊÇÄã¼´½«É¾³ıµÄ°à³µĞÅÏ¢(ÊäÈë1É¾³ı£¬0È¡Ïû):\n");
-	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
+	printf("è¿™æ˜¯ä½ å³å°†åˆ é™¤çš„ç­è½¦ä¿¡æ¯(è¾“å…¥1åˆ é™¤ï¼Œ0å–æ¶ˆ):\n");
+	printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");
 	printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", num, delinfo.starttime, delinfo.startstation, delinfo.destination, delinfo.triplong, delinfo.max, delinfo.current, "|");
 	if (isLaterThanSystemTime(delinfo.starttime))
 	{
-		printf("´Ë°àÒÑ·¢³ö");
+		printf("æ­¤ç­å·²å‘å‡º");
 	}
 	printf("\n");
 	int answer;
@@ -359,40 +371,40 @@ void DelBus()
 	if (answer==1)
 	{
 		deleteLine("data.bin", num+1);
+		OutPutWithTime("ä¿¡æ¯å·²ä¿å­˜");
 	}
 }
-
+// æ–°æ‰‹æ•™ç¨‹
 void Welcome()
 {
-	printf("³µÆ±¹ÜÀíÏµÍ³v1.0\n");
+	printf("è½¦ç¥¨ç®¡ç†ç³»ç»Ÿv1.1\n");
 	printf("Powered by NortzWolfy&Hehu\n\n");
 
-	printf("»¶Ó­À´µ½³µÆ±·şÎñÆ½Ì¨£¬Í¨¹ı¼òµ¥µÄÃüÁî£¬Äú¿ÉÒÔ·½±ãµØ¹ÜÀíÄúµÄ³µÆ±£º\n");
-	printf("Äú¿ÉÒÔ¼üÈë¿ì½İ¼üÀ´½øĞĞËùĞè²Ù×÷:\n");
+	printf("æ¬¢è¿æ¥åˆ°è½¦ç¥¨æœåŠ¡å¹³å°ï¼Œé€šè¿‡ç®€å•çš„å‘½ä»¤ï¼Œæ‚¨å¯ä»¥æ–¹ä¾¿åœ°ç®¡ç†æ‚¨çš„è½¦ç¥¨ï¼š\n");
+	printf("æ‚¨å¯ä»¥é”®å…¥å¿«æ·é”®æ¥è¿›è¡Œæ‰€éœ€æ“ä½œ:\n");
 	for (int i = 0; i <18*4+1; i++)
 	{
 		printf("_");
 	}
-	printf("\n|%-16s |%-16s |%-16s |%-16s %s\n", "Â¼Èë°à´ÎĞÅÏ¢","ä¯ÀÀ°à´ÎĞÅÏ¢","²éÑ¯Â·Ïß","ÊÛÆ±ÓëÍËÆ±","|");
+	printf("\n|%-16s |%-16s |%-16s |%-16s %s\n", "å½•å…¥ç­æ¬¡ä¿¡æ¯","æµè§ˆç­æ¬¡ä¿¡æ¯","æŸ¥è¯¢è·¯çº¿","å”®ç¥¨ä¸é€€ç¥¨","|");
 	printf("|%-16s |%-16s |%-16s |%-16s %s\n", "w", "v", "c", "p", "|");
 	for (int i = 0; i < 18 * 4+1; i++)
 	{
 		printf("-");
 	}
-	printf("\nÀıÈçÎÒĞèÒª½øÈë ÊÛÆ±ÓëÍËÆ± ¹¦ÄÜ£¬ÇëÊäÈëp²¢»Ø³µ");
-	printf("\nÏÖÔÚ£¬ÇëÊäÈëÄúĞèÒª²Ù×÷µÄ´úÂë:");
+	printf("\nä¾‹å¦‚æˆ‘éœ€è¦è¿›å…¥ å”®ç¥¨ä¸é€€ç¥¨ åŠŸèƒ½ï¼Œè¯·è¾“å…¥på¹¶å›è½¦");
+	printf("\nç°åœ¨ï¼Œè¯·è¾“å…¥æ‚¨éœ€è¦æ“ä½œçš„ä»£ç :");
 }
-
+// è¿›å…¥ [å½•å…¥ç­æ¬¡ä¿¡æ¯] åŠŸèƒ½
 void WriteBusDataFunction()
 {
 	if (verifyuser())
 	{
 		system("cls");
-		OutPutWithTime("ÑéÖ¤³É¹¦");
+		OutPutWithTime("éªŒè¯æˆåŠŸ");
 		while (1)
 		{
-
-			printf("ĞèÒª²éÑ¯ËùÓĞ°à´ÎÊäÈëc£¬Ôö¼Ó»òÉ¾³ı°à´ÎÊäÈë1»ò0£¬ÊäÈër·µ»Ø\n");
+			printf("éœ€è¦æŸ¥è¯¢æ‰€æœ‰ç­æ¬¡è¾“å…¥cï¼Œå¢åŠ æˆ–åˆ é™¤ç­æ¬¡è¾“å…¥1æˆ–0ï¼Œè¾“å…¥rè¿”å›\n");
 			char data[2];
 			scanf("%s", &data);
 			if (data[0] == 'r')
@@ -406,15 +418,15 @@ void WriteBusDataFunction()
 				switch (data[0])
 				{
 				case 'c':
-					OutPutWithTime("ÏÂÃæÊä³ö½ñÌìËùÓĞ´æÔÚµÄ°à´Î:");
+					OutPutWithTime("ä¸‹é¢è¾“å‡ºä»Šå¤©æ‰€æœ‰å­˜åœ¨çš„ç­æ¬¡:");
 					OutPutAllBusTime();
 					break;
 				case '1':
-					OutPutWithTime("ÄúÑ¡ÔñÔöÌíÒ»°à°à³µ£¬Çë¸ù¾İÖ¸ÒıÌîĞ´°à³µĞÅÏ¢:");
+					OutPutWithTime("æ‚¨é€‰æ‹©å¢æ·»ä¸€ç­ç­è½¦ï¼Œè¯·æ ¹æ®æŒ‡å¼•å¡«å†™ç­è½¦ä¿¡æ¯:");
 					AddNewBus();
 					break;
 				case '0':
-					OutPutWithTime("ÄúÑ¡ÔñÉ¾³ıÒ»°à°à³µ£¬Çë¸ù¾İÏÂÁĞÖ¸ÒıÉ¾³ı°à³µĞÅÏ¢:");
+					OutPutWithTime("æ‚¨é€‰æ‹©åˆ é™¤ä¸€ç­ç­è½¦ï¼Œè¯·æ ¹æ®ä¸‹åˆ—æŒ‡å¼•åˆ é™¤ç­è½¦ä¿¡æ¯:");
 					DelBus();
 					break;
 				default:
@@ -425,8 +437,8 @@ void WriteBusDataFunction()
 	}
 	else
 	{
-		OutPutWithTime("ÓÃ»§Ãû»òÃÜÂë´íÎó");
-		printf("ÊÇ·ñÖØÊÔ?(ÊäÈë1»ò0):\n");
+		OutPutWithTime("ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯");
+		printf("æ˜¯å¦é‡è¯•?(è¾“å…¥1æˆ–0):\n");
 		int data;
 		scanf("%d", &data);
 		if (data==1)
@@ -441,35 +453,35 @@ void WriteBusDataFunction()
 	}
 
 }
-
+// è¿›å…¥ [æŸ¥è¯¢è·¯çº¿] åŠŸèƒ½
 void SearchBusFunction()
 {
 	while (1)
 	{
-		printf("Äú¿É°´°à´ÎºÅ²éÑ¯(ÊäÈë1)£¬¿É°´ÖÕµãÕ¾²éÑ¯(ÊäÈë2)£¬ÊäÈër·µ»Ø:\n");
+		printf("æ‚¨å¯æŒ‰ç­æ¬¡å·æŸ¥è¯¢(è¾“å…¥1)ï¼Œå¯æŒ‰ç»ˆç‚¹ç«™æŸ¥è¯¢(è¾“å…¥2)ï¼Œè¾“å…¥rè¿”å›:\n");
 		char answer[2];
 		scanf("%s", &answer);
 		if (answer[1] == '\0')
 		{
 			if (answer[0] == '1')
 			{
-				printf("ÇëÊäÈë°à´ÎºÅ:");
+				printf("è¯·è¾“å…¥ç­æ¬¡å·:");
 				int num;
 				scanf("%d", &num);
 
 				struct businfo currentinfo;
 				FILE* file;
-				char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-				int targetLine = num; // Ä¿±êĞĞºÅ
-				file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-				fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
+				char line[100]; // å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+				int targetLine = num; // ç›®æ ‡è¡Œå·
+				file = fopen("data.bin", "r"); // æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+				fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
 				while ((fgetc(file)) != EOF && targetLine > 0)
 				{
-					fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
+					fgets(line, sizeof(line), file); //ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
 					targetLine--;
 				}
 				fclose(file);
-
+				//ä¾æ¬¡ä»¥'|'åˆ†éš”è¯»æ¥çš„ä¸€è¡Œå­˜å‚¨åˆ°currentinfo
 				char* token = strtok(line, "|");
 				strcpy(currentinfo.starttime, token);
 				token = strtok(NULL, "|");
@@ -488,18 +500,18 @@ void SearchBusFunction()
 				token = strtok(NULL, "|");
 				strcpy(current, token);
 				currentinfo.current = atoi(current);
-				printf("ÕâÊÇÄú²éÑ¯µÄ°à³µĞÅÏ¢:\n");
-				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
+				printf("è¿™æ˜¯æ‚¨æŸ¥è¯¢çš„ç­è½¦ä¿¡æ¯:\n");
+				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");
 				printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", num, currentinfo.starttime, currentinfo.startstation, currentinfo.destination, currentinfo.triplong, currentinfo.max, currentinfo.current, "|");
 				if (isLaterThanSystemTime(currentinfo.starttime))
 				{
-					printf("´Ë°àÒÑ·¢³ö");
+					printf("æ­¤ç­å·²å‘å‡º");
 				}
 				printf("\n");
 			}
 			else if (answer[0] == '2')
 			{
-				printf("ÇëÊäÈëÖÕµãÕ¾Ãû³Æ:");
+				printf("è¯·è¾“å…¥ç»ˆç‚¹ç«™åç§°:");
 				char num[20];
 				scanf("%s", &num);
 				OutPutAllBusTimeByName(num);
@@ -512,14 +524,14 @@ void SearchBusFunction()
 		}
 	}
 }
-
+// è¿›å…¥ [å”®ç¥¨ä¸é€€ç¥¨] åŠŸèƒ½
 void TradeTicket()
 {
-	printf("ÎŞÕËºÅµÇÂ¼ÏµÍ³µÄ¹ºÆ±ÍËÆ±£¬½öÏŞÓéÀÖ\n");
+	printf("æ— è´¦å·ç™»å½•ç³»ç»Ÿçš„è´­ç¥¨é€€ç¥¨ï¼Œä»…é™å¨±ä¹\n");
 	while (1)
 	{
-		
-		printf("Äú¿ÉÊäÈëc²éÑ¯½ñÈÕËùÓĞ°à´Î£¬ÊäÈë1À´¹ºÆ±£¬0À´ÍËÆ±£¬rÍË³ö:");
+		fflush(stdin);
+		printf("æ‚¨å¯è¾“å…¥cæŸ¥è¯¢ä»Šæ—¥æ‰€æœ‰ç­æ¬¡ï¼Œè¾“å…¥1æ¥è´­ç¥¨ï¼Œ0æ¥é€€ç¥¨ï¼Œré€€å‡º:");
 		char answer[2];
 		scanf("%s", &answer);
 		if (answer[1] == '\0')
@@ -530,22 +542,32 @@ void TradeTicket()
 			}
 			else if (answer[0] == '1')
 			{
-				printf("ÄúÑ¡ÔñÁË¹ºÂò³µÆ±£¬ÇëÊäÈëÄúÒª¹ºÂòµÄ°à´Î:");
+				printf("æ‚¨é€‰æ‹©äº†è´­ä¹°è½¦ç¥¨ï¼Œè¯·è¾“å…¥æ‚¨è¦è´­ä¹°çš„ç­æ¬¡:");
 				int num;
 				scanf("%d", &num);
+				if (num <= 0)
+				{
+					printf("å¯¹ä¸èµ·ï¼Œè¯·è¾“å…¥æ­£ç¡®çš„ç­æ¬¡\n\n");
+					continue;
+				}
 				struct businfo currentinfo;
 				FILE* file;
-				char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-				int targetLine = num; // Ä¿±êĞĞºÅ
-				file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-				fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
+				char line[100]; // å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+				int targetLine = num; // ç›®æ ‡è¡Œå·
+				file = fopen("data.bin", "r"); // æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+				fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
 				while ((fgetc(file)) != EOF && targetLine > 0)
 				{
-					fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
+					fgets(line, sizeof(line), file); // ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
 					targetLine--;
 				}
 				fclose(file);
-
+				if (targetLine!=0)
+				{
+					printf("å¯¹ä¸èµ·ï¼Œæœªæ‰¾åˆ°è¯¥ç­æ¬¡\n\n");
+					continue;
+				}
+				//ä¾æ¬¡ä»¥'|'åˆ†éš”è¯»æ¥çš„ä¸€è¡Œå­˜å‚¨åˆ°currentinfo
 				char* token = strtok(line, "|");
 				strcpy(currentinfo.starttime, token);
 				token = strtok(NULL, "|");
@@ -564,53 +586,70 @@ void TradeTicket()
 				token = strtok(NULL, "|");
 				strcpy(current, token);
 				currentinfo.current = atoi(current);
-				printf("ÕâÊÇÄã¼´½«¹ºÂòµÄ°à³µĞÅÏ¢(ÊäÈë1È·ÈÏ¹ºÂò£¬0È¡Ïû):\n");
-				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
+				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");
 				printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", num, currentinfo.starttime, currentinfo.startstation, currentinfo.destination, currentinfo.triplong, currentinfo.max, currentinfo.current, "|");
 				if (isLaterThanSystemTime(currentinfo.starttime))
 				{
-					printf("´Ë°àÒÑ·¢³ö");
+					printf("æ­¤ç­å·²å‘å‡º");
 				}
 				printf("\n");
+				printf("è¿™æ˜¯ä½ å³å°†è´­ä¹°çš„ç­è½¦ä¿¡æ¯(è¾“å…¥æ‚¨è¦è´­ä¹°çš„è½¦ç¥¨æ•°é‡ï¼Œ0å–æ¶ˆ):\n");
 				int as;
 				scanf("%d", &as);
-				if (as==1)
+				if (as>0)
 				{
-					if (currentinfo.current>=currentinfo.max)
+					if (currentinfo.current+as>currentinfo.max)
 					{
-						printf("¶Ô²»Æğ£¬¸Ã°à´Î³µÆ±ÒÑÊÛóÀ\n\n");
+						printf("å¯¹ä¸èµ·ï¼Œè¯¥ç­æ¬¡è½¦ç¥¨ä¸è¶³\n\n");
 					}
 					else if(isLaterThanSystemTime(currentinfo.starttime))
 					{
-						printf("¶Ô²»Æğ£¬´Ë°àÒÑ·¢³ö\n\n");
+						printf("å¯¹ä¸èµ·ï¼Œæ­¤ç­å·²å‘å‡º\n\n");
 					}
 					else
 					{
-						currentinfo.current++;
+						currentinfo.current+=as;
 						deleteLine("data.bin", num+1);
 						WriteToFileAtLine("data.bin", num, &currentinfo);
 						removeEmptyLines("data.bin");
+						char cachedata[200];
+						sprintf(cachedata, "æ­å–œæ‚¨ï¼Œè½¦ç¥¨å·²æˆåŠŸé¢„å®š %d å¼ ,è¯·æ‚¨åŠæ—¶å‰å¾€è½¦ç«™å‡­äºŒä»£èº«ä»½è¯å–ç¥¨", as);
+						OutPutWithTime(cachedata);
 					}
+				}
+				else
+				{
+					printf("å¯¹ä¸èµ·ï¼Œè¯·è¾“å…¥æ­£ç¡®çš„ç¥¨æ•°\n\n");
 				}
 			}
 			else if (answer[0] == '0')
 			{
-				printf("ÄúÑ¡ÔñÁËÍËÆ±£¬ÇëÊäÈëÄúÓûÍËÆ±µÄ°à´Î:");
+				printf("æ‚¨é€‰æ‹©äº†é€€ç¥¨ï¼Œè¯·è¾“å…¥æ‚¨æ¬²é€€ç¥¨çš„ç­æ¬¡:");
 				int num;
 				scanf("%d", &num);
+				if (num<=0)
+				{
+					printf("å¯¹ä¸èµ·ï¼Œè¯·è¾“å…¥æ­£ç¡®çš„ç­æ¬¡\n\n");
+					continue;
+				}
 				struct businfo currentinfo;
 				FILE* file;
-				char line[100]; // ´æ´¢µ¥ĞĞÄÚÈİµÄ×Ö·ûÊı×é
-				int targetLine = num; // Ä¿±êĞĞºÅ
-				file = fopen("data.bin", "r"); // ´ò¿ªÎÄ¼ş½øĞĞ¶ÁÈ¡²Ù×÷
-				fgets(line, sizeof(line), file);//Ìø¹ıµÚÒ»ĞĞ
+				char line[100]; // å­˜å‚¨å•è¡Œå†…å®¹çš„å­—ç¬¦æ•°ç»„
+				int targetLine = num; // ç›®æ ‡è¡Œå·
+				file = fopen("data.bin", "r"); // æ‰“å¼€æ–‡ä»¶è¿›è¡Œè¯»å–æ“ä½œ
+				fgets(line, sizeof(line), file);//è·³è¿‡ç¬¬ä¸€è¡Œ
 				while ((fgetc(file)) != EOF && targetLine > 0)
 				{
-					fgets(line, sizeof(line), file); // ÒÀ´Î¶ÁÈ¡Ã¿Ò»ĞĞ
+					fgets(line, sizeof(line), file); // ä¾æ¬¡è¯»å–æ¯ä¸€è¡Œ
 					targetLine--;
 				}
 				fclose(file);
-
+				if (targetLine != 0)
+				{
+					printf("å¯¹ä¸èµ·ï¼Œæœªæ‰¾åˆ°è¯¥ç­æ¬¡\n\n");
+					continue;
+				}
+				//ä¾æ¬¡ä»¥'|'åˆ†éš”è¯»æ¥çš„ä¸€è¡Œå­˜å‚¨åˆ°currentinfo
 				char* token = strtok(line, "|");
 				strcpy(currentinfo.starttime, token);
 				token = strtok(NULL, "|");
@@ -629,33 +668,38 @@ void TradeTicket()
 				token = strtok(NULL, "|");
 				strcpy(current, token);
 				currentinfo.current = atoi(current);
-				printf("ÕâÊÇÄã¼´½«ÍËÆ±µÄ°à³µĞÅÏ¢(ÊäÈë1È·ÈÏÍËÆ±£¬0È¡Ïû):\n");
-				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "°à´Î", "·¢³µÊ±¼ä", "ÆğµãÕ¾", "ÖÕµãÕ¾", "ĞĞ³µÊ±Êı", "¶î¶¨ÔØÁ¿", "ÒÑ¶©Æ±Êı", "|");
+				printf("|%-6s |%-10s |%-8s |%-8s |%-10s |%-6s |%-6s %s\n", "ç­æ¬¡", "å‘è½¦æ—¶é—´", "èµ·ç‚¹ç«™", "ç»ˆç‚¹ç«™", "è¡Œè½¦æ—¶æ•°", "é¢å®šè½½é‡", "å·²è®¢ç¥¨æ•°", "|");
 				printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", num, currentinfo.starttime, currentinfo.startstation, currentinfo.destination, currentinfo.triplong, currentinfo.max, currentinfo.current, "|");
 				if (isLaterThanSystemTime(currentinfo.starttime))
 				{
-					printf("´Ë°àÒÑ·¢³ö");
+					printf("æ­¤ç­å·²å‘å‡º");
 				}
 				printf("\n");
+				printf("è¿™æ˜¯ä½ å³å°†é€€ç¥¨çš„ç­è½¦ä¿¡æ¯(è¯·è¾“å…¥é€€ç¥¨ç¥¨æ•°ï¼Œ0å–æ¶ˆ):\n");
 				int as;
 				scanf("%d", &as);
-				if (as == 1)
+				if (as >0)
 				{
 					if (currentinfo.current == 0)
 					{
-						printf("¶Ô²»Æğ£¬¸Ã°à´Î³µÆ±ÎªÁã\n\n");
+						printf("å¯¹ä¸èµ·ï¼Œè¯¥ç­æ¬¡è½¦ç¥¨ä¸ºé›¶\n\n");
 					}
 					else if (isLaterThanSystemTime(currentinfo.starttime))
 					{
-						printf("¶Ô²»Æğ£¬´Ë°àÒÑ·¢³ö\n\n");
+						printf("å¯¹ä¸èµ·ï¼Œæ­¤ç­å·²å‘å‡º\n\n");
 					}
 					else
 					{
-						currentinfo.current--;
+						currentinfo.current-=as;
 						deleteLine("data.bin", num + 1);
 						WriteToFileAtLine("data.bin", num, &currentinfo);
 						removeEmptyLines("data.bin");
+						OutPutWithTime("é€€ç¥¨æˆåŠŸ");
 					}
+				}
+				else
+				{
+					printf("å¯¹ä¸èµ·ï¼Œè¯·è¾“å…¥æ­£ç¡®çš„ç¥¨æ•°\n\n");
 				}
 			}
 			else if(answer[0]=='r')
