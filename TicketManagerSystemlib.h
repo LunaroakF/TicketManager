@@ -73,7 +73,11 @@ void OutPutAllBusTime()
 		printf("|%-6d |%-10s |%-8s |%-8s |%-10.1lf |%-8d |%-8d %s", targetLine, lineinfo.starttime, lineinfo.startstation, lineinfo.destination, lineinfo.triplong, lineinfo.max, lineinfo.current, "|");
 		if (isLaterThanSystemTime(lineinfo.starttime))
 		{
-			printf("此班已发出");
+			printf("此班已发出 ");
+		}
+		if (lineinfo.current>=lineinfo.max)
+		{
+			printf("已售罄");
 		}
 		printf("\n");
 		targetLine++;
@@ -124,6 +128,10 @@ void OutPutAllBusTimeByName(char* name)
 		if (isLaterThanSystemTime(lineinfo.starttime))
 		{
 			printf("此班已发出");
+		}
+		if (lineinfo.current >= lineinfo.max)
+		{
+			printf("已售罄");
 		}
 		printf("\n");
 		targetLine++;
@@ -298,6 +306,10 @@ void AddNewBus()
 	{
 		printf("此班已发出");
 	}
+	if (newinfo.current >= newinfo.max)
+	{
+		printf("已售罄");
+	}
 	printf("\n");
 	printf("请确认您的班车信息(输入1同意，0舍弃):\n");
 	int answer;
@@ -364,6 +376,10 @@ void DelBus()
 	if (isLaterThanSystemTime(delinfo.starttime))
 	{
 		printf("此班已发出");
+	}
+	if (delinfo.current >= delinfo.max)
+	{
+		printf("已售罄");
 	}
 	printf("\n");
 	int answer;
@@ -507,6 +523,10 @@ void SearchBusFunction()
 				{
 					printf("此班已发出");
 				}
+				if (currentinfo.current >= currentinfo.max)
+				{
+					printf("已售罄");
+				}
 				printf("\n");
 			}
 			else if (answer[0] == '2')
@@ -592,6 +612,10 @@ void TradeTicket()
 				{
 					printf("此班已发出");
 				}
+				if (currentinfo.current >= currentinfo.max)
+				{
+					printf("已售罄");
+				}
 				printf("\n");
 				printf("这是你即将购买的班车信息(输入您要购买的车票数量，0取消):\n");
 				int as;
@@ -673,6 +697,10 @@ void TradeTicket()
 				if (isLaterThanSystemTime(currentinfo.starttime))
 				{
 					printf("此班已发出");
+				}
+				if (currentinfo.current >= currentinfo.max)
+				{
+					printf("已售罄");
 				}
 				printf("\n");
 				printf("这是你即将退票的班车信息(请输入退票票数，0取消):\n");
